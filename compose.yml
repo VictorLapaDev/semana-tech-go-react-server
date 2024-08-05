@@ -3,26 +3,30 @@ services:
     image: postgres:latest
     restart: unless-stopped
     ports:
-      - ${WSRS_DATABASE_PORT:-5432}: 5432
+      - "5432:5432"
     environment:
-      POSTGRES_USER: ${WSRS_DATABASE_USER}
-      POSTGRES_PASSWORD: ${WSRS_DATABASE_PASSWORD}
-      POSTGRES_DB: ${WSRS_DATABASE_NAME}
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "123456789"
+      POSTGRES_DB: "wsrs"
     volumes:
-      - db: /var/lib/postgresql/data
+      - type: volume
+        source: db
+        target: /var/lib/postgresql/data
 
-    pgadmin:
-      image: dpage/pgadmin4:latest
-      restart: unless-stopped
-      depend_on:
-        - db
-      ports:
-        - 8081:80
-      enviroment:
-        PGADMIN_DEFAULT_EMAIL: admin@admin@.com
-        PGADMIN_DEFAULT_PASSWORD: password
-      volumes:
-        - pgadmin:/var/lib/pgadmin
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    restart: unless-stopped
+    depends_on:
+      - db
+    ports:
+      - 8081:80
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin@.com
+      PGADMIN_DEFAULT_PASSWORD: password
+    volumes:
+      - type: volume
+        source: pgadmin
+        target: /var/lib/pgadmin
 
 volumes:
   db:
